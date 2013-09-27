@@ -1,0 +1,17 @@
+{
+  "name": "organic-mongoose",
+  "version": "0.0.1",
+  "main": "index.js",
+  "scripts": {
+    "test": "jasmine-node ./tests/"
+  },
+  "dependencies": {
+    "organic": "0.1.1",
+    "mongoose": "3.6.20"
+  },
+  "devDependencies": {
+    "jasmine-node": "latest",
+    "shelljs": "latest"
+  },
+  "license": "MIT"
+}
