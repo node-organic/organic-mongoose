@@ -23,10 +23,13 @@ module.exports = Organel.extend(function Mongoose(plasma, config){
 
       if(self.config.recreateDatabase) {
         mongoose.connection.db.dropDatabase(function(){
-          mongoose.connect('localhost', self.config.database.name, function(){
-            self.emit({type: "Mongoose", data:{}});
-            next && next()
-          });
+          mongoose.disconnect(function(){
+            mongoose.connect('localhost', self.config.database.name, function(err){
+              if(err) {console.log(err); return next && next(err)}
+              self.emit({type: "Mongoose", data:{}});
+              next && next()
+            });
+          })
         });
       } else {
         self.emit({type: "Mongoose", data:{}});
