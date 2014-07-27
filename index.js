@@ -1,45 +1,52 @@
-var Organel = require("organic").Organel;
-var mongoose = require("mongoose");
+var mongoose = require("mongoose")
 
-module.exports = Organel.extend(function Mongoose(plasma, config){
-  Organel.call(this, plasma);
+module.exports = function OrganicMongoose(plasma, config){
 
-  this.config = config;
+  this.config = config
+  this.config.emitReady = config.emitReady || "Mongoose"
+
+  this.emit = function(type) {
+    plasma.emit(type)
+  }
 
   if(config.reactOn)
-    this.on(config.reactOn, this.connect)
+    plasma.on(config.reactOn, this.connect, this)
   else
-    this.connect()
+    this.connect(null)
 
-  plasma.on("kill", this.disconnect)
-}, {
-  connect: function(c, next){
-    var self = this;
-    mongoose.connect('localhost', self.config.database.name, function(err){
-      if (err) {
-        console.error(err)
-        return next && next(err)
-      }
+  plasma.on("kill", this.disconnect, this)
+}
 
-      if(self.config.recreateDatabase) {
-        mongoose.connection.db.dropDatabase(function(){
-          mongoose.disconnect(function(){
-            mongoose.connect('localhost', self.config.database.name, function(err){
-              if(err) {console.log(err); return next && next(err)}
-              self.emit({type: "Mongoose", data:{}});
-              next && next()
-            });
+module.exports.prototype.connect = function(c, next){
+  var self = this
+  mongoose.connect('localhost', self.config.database.name, function(err){
+    if (err) {
+      console.error(err)
+      return next && next(err)
+    }
+
+    if(self.config.recreateDatabase) {
+      mongoose.connection.db.dropDatabase(function(){
+        // workaround mongoose.connection issue with dropped db and open connection
+        mongoose.connection.db.close(function(){
+          mongoose.connection.readyState = 0 
+          mongoose.connect('localhost', self.config.database.name, function(err){
+            if(err) {
+              console.error(err) 
+              return next && next(err)
+            }
+            self.emit(self.config.emitReady)
+            next && next()
           })
-        });
-      } else {
-        self.emit({type: "Mongoose", data:{}});
-        next && next()
-      }
-    });
-    return false; // do not aggregate c
-  },
-  disconnect: function(c, next){
-    mongoose.disconnect(next);
-    return false;
-  }
-})
+        })
+      })
+    } else {
+      self.emit(self.config.emitReady)
+      next && next()
+    }
+  })
+}
+
+module.exports.prototype.disconnect = function(c, next){
+  mongoose.disconnect(next)
+}

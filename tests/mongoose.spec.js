@@ -11,16 +11,21 @@ describe("mongoose", function(){
   }
   var instance;
   it("starts and connects", function(next){
-    instance = new Mongoose(new Plasma(), dna)
-    next()
+    var plasma = new Plasma()
+    instance = new Mongoose(plasma, dna)
+    plasma.once("Mongoose", function(){
+      instance.disconnect(null, function(){
+        next()
+      })
+    })
   })
 
   it("recreates db", function(next){
-    instance.disconnect(null, function(){
-      instance.config.recreateDatabase = true
-      instance.connect()
-      instance.disconnect()
-      next()  
+    instance.config.recreateDatabase = true
+    instance.connect(null, function(){
+      instance.disconnect(null, function(){
+        next()
+      })
     })
   })
 })
