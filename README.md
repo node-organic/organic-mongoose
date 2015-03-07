@@ -18,7 +18,7 @@ The organelle provides support for mongoose ORM.
 - `reactOn` - Type of chemical
 - `database.host` - connection_string, mongodb://uri or the host to which you are connecting (default: localhost)
 - `database.name` - name of the database to connect and/or create
-- `database.port` - database port
+- `database.port` - database port (default: 27017)
 - `database.options` - options is a hash with the following possible properties:
  - db      - passed to the connection db instance
  - server  - passed to the connection server instance(s)
