@@ -28,4 +28,16 @@ describe("mongoose", function(){
       })
     })
   })
+
+  it("test uknown host/port [0.0.0.1:27018]", function(next){
+    instance.config.database.host = "0.0.0.1"
+    instance.config.database.port = 27018
+    instance.connect(null, function(err){
+      expect(err).toBeDefined()
+      expect(
+        err.message.indexOf("failed to connect to [0.0.0.1:27018]") != -1
+      ).toBe(true)
+      next()
+    })
+  })
 })
