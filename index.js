@@ -22,6 +22,14 @@ module.exports = function OrganicMongoose(plasma, config){
 
 module.exports.prototype.connect = function(c, next){
   var self = this
+
+  if (global.Promise) {
+    mongoose.Promise = global.Promise
+  }
+  else {
+    mongoose.Promise = require("bluebird")
+  }
+
   mongoose.connect(self.config.database.host,
     self.config.database.name,
     self.config.database.port,
