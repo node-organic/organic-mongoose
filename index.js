@@ -30,6 +30,11 @@ module.exports.prototype.connect = function(c, next){
     mongoose.Promise = require("bluebird")
   }
 
+  if (mongoose.connection.readyState > 0) {
+    self.emit(self.config.emitReady)
+    return next && next()
+  }
+
   mongoose.connect(self.config.database.host,
     self.config.database.name,
     self.config.database.port,
