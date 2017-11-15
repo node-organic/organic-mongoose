@@ -30,7 +30,7 @@ module.exports.prototype.connect = function(c, next){
     mongoose.Promise = require("bluebird")
   }
 
-  mongoose.createConnection(self.config.database.host,
+  mongoose.connect(self.config.database.host,
     self.config.database.name,
     self.config.database.port,
     self.config.database.options,
@@ -45,7 +45,7 @@ module.exports.prototype.connect = function(c, next){
         // workaround mongoose.connection issue with dropped db and open connection
         mongoose.connection.db.close(function(){
           mongoose.connection.readyState = 0
-          mongoose.createConnection(self.config.database.host,
+          mongoose.connect(self.config.database.host,
             self.config.database.name,
             self.config.database.port,
             self.config.database.options,
