@@ -35,7 +35,7 @@ describe("mongoose", function(){
     instance.connect(null, function(err){
       expect(err).toBeDefined()
       expect(
-        err.message.indexOf("failed to connect to [0.0.0.1:27018]") != -1
+        err.message.indexOf("failed to connect to server [0.0.0.1:27018]") != -1
       ).toBe(true)
       next()
     })
