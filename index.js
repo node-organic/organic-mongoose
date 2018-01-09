@@ -30,7 +30,7 @@ module.exports.prototype.connect = function(c, next){
     mongoose.Promise = require("bluebird")
   }
 
-  if (mongoose.connection.readyState > 0) {
+  if (self.config.reuseMongooseConnection && mongoose.connection.readyState > 0) {
     self.emit(self.config.emitReady)
     return next && next()
   }
