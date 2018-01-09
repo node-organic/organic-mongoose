@@ -35,40 +35,36 @@ module.exports.prototype.connect = function(c, next){
     return next && next()
   }
 
-  mongoose.connect(self.config.database.host,
-    self.config.database.name,
-    self.config.database.port,
-    self.config.database.options,
-  function(err){
-    if (err) {
-      console.error(err)
-      return next && next(err)
-    }
-
-    if(self.config.recreateDatabase) {
-      mongoose.connection.db.dropDatabase(function(){
-        // workaround mongoose.connection issue with dropped db and open connection
-        mongoose.connection.db.close(function(){
-          mongoose.connection.readyState = 0
-          mongoose.connect(self.config.database.host,
-            self.config.database.name,
-            self.config.database.port,
-            self.config.database.options,
-          function(err){
-            if(err) {
-              console.error(err)
-              return next && next(err)
-            }
-            self.emit(self.config.emitReady)
-            next && next()
+  var uri = `mongodb://${self.config.database.host}:${self.config.database.port}/${self.config.database.name}`
+  var options = self.config.database.options
+  options.useMongoClient = true
+  mongoose.connect(uri, options)
+    .then(function () {
+      if(self.config.recreateDatabase) {
+        mongoose.connection.db.dropDatabase(function(){
+          // workaround mongoose.connection issue with dropped db and open connection
+          mongoose.connection.db.close(function(){
+            mongoose.connection.readyState = 0
+            mongoose.connect(uri, options)
+              .then(function () {
+                self.emit(self.config.emitReady)
+                next && next()
+              })
+              .catch(function (err){
+                console.error(err)
+                return next && next(err)
+            })
           })
         })
-      })
-    } else {
-      self.emit(self.config.emitReady)
-      next && next()
-    }
-  })
+      } else {
+        self.emit(self.config.emitReady)
+        next && next()
+      }
+    })
+    .catch(function (err){
+      console.error(err)
+      return next && next(err)
+    })
 }
 
 module.exports.prototype.disconnect = function(c, next){
