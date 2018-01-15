@@ -30,6 +30,11 @@ module.exports.prototype.connect = function(c, next){
     mongoose.Promise = require("bluebird")
   }
 
+  if (self.config.reuseMongooseConnection && mongoose.connection.readyState > 0) {
+    self.emit(self.config.emitReady)
+    return next && next()
+  }
+
   var uri = `mongodb://${self.config.database.host}:${self.config.database.port}/${self.config.database.name}`
   var options = self.config.database.options
   options.useMongoClient = true

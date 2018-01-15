@@ -13,6 +13,7 @@ The organelle provides support for mongoose ORM.
         options: Object /* optional */
       },
       recreateDatabase: Boolean, /* optional */
+      reuseMongooseConnection: Boolean, /* optional */
     }
 
 - `reactOn` - Type of chemical
@@ -30,6 +31,7 @@ The organelle provides support for mongoose ORM.
   for more info see http://mongoosejs.com/docs/api.html#connection_Connection-open
 
 - `reacreateDatabase` - when set upon first connection will clean all the database records.
+- `reuseMongooseConnection` - false by default. When set to true - the organelle will emit "ready", if there is already open mongoose connection.
 
 ## emits chemical with type `Mongoose`
 Once ready and opened connection to mongodb.
